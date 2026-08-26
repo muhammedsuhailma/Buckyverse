@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "315420119841",
+    "project_id": "bucky-verse",
+    "storage_bucket": "bucky-verse.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:315420119841:android:c54c77649e98232b16e460",
+        "android_client_info": {
+          "package_name": "com.example.bucky_verse"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "315420119841-4rka8vgdsemcnjvd53nu19edn1567p19.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.bucky_verse",
+            "certificate_hash": "b2baff5ba0af8f2baff6e4a2499571fdf06a2979"
+          }
+        },
+        {
+          "client_id": "315420119841-nf46f5jc1bo8joo7r673kls52drm4oql.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfUuXmLYLyp3fDs-dS-nRINoQ4zqOF3Sw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "315420119841-nf46f5jc1bo8joo7r673kls52drm4oql.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "315420119841-631an00p0r4oapih6fqi7ejbvjljttg1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.buckyVerse"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
