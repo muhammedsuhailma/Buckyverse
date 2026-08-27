@@ -1,5 +1,4 @@
 import 'package:bucky_verse/widgets/profile/continue_journey.dart';
-import 'package:bucky_verse/widgets/profile/discover_buckyverse.dart';
 import 'package:bucky_verse/widgets/profile/journey_stats.dart';
 import 'package:bucky_verse/widgets/profile/profilebanneer.dart';
 import 'package:bucky_verse/widgets/shimmer/profile_shimmer.dart';

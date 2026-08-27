@@ -269,7 +269,7 @@ class _ProfileBannerState extends State<ProfileBanner> {
         return StatefulBuilder(
           builder: (dialogCtx, setDialogState) {
             // ── Validation helper ────────────────────────────────────────
-            String? _validate(String raw) {
+            String? validate(String raw) {
               final name = raw.trim();
               if (name.isEmpty) return "Username cannot be empty.";
               if (name.length < 3) {
@@ -289,7 +289,7 @@ class _ProfileBannerState extends State<ProfileBanner> {
               if (_isSavingUsername) return;
 
               final raw = controller.text;
-              final error = _validate(raw);
+              final error = validate(raw);
               if (error != null) {
                 if (!dialogCtx.mounted) return;
                 _showCosmicSnack(dialogCtx, error);
@@ -306,6 +306,10 @@ class _ProfileBannerState extends State<ProfileBanner> {
 
               setDialogState(() => _isSavingUsername = true);
               setState(() => _isSavingUsername = true);
+
+              // Capture context-dependent objects before async gaps
+              final dialogNavigator = Navigator.of(dialogCtx);
+              final profileScaffold = ScaffoldMessenger.of(context);
 
               try {
                 final user = FirebaseAuth.instance.currentUser;
@@ -347,17 +351,67 @@ class _ProfileBannerState extends State<ProfileBanner> {
 
                 if (!mounted) return;
 
-                // Close dialog first, then refresh + show snack on profile ctx
-                Navigator.pop(dialogCtx);
-
-                // Refresh banner
+                // Close dialog then refresh banner + show snack
+                dialogNavigator.pop();
                 setState(() {});
 
-                _showCosmicSnack(
-                  context,
-                  "✅ Username updated successfully.",
-                  isSuccess: true,
-                );
+                profileScaffold
+                  ..clearSnackBars()
+                  ..showSnackBar(
+                    SnackBar(
+                      duration: const Duration(milliseconds: 3000),
+                      behavior: SnackBarBehavior.floating,
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      content: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 11,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF14111D),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: const Color(0xFF22A45D),
+                            width: 1.1,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(
+                                0xFF22A45D,
+                              ).withValues(alpha: 0.20),
+                              blurRadius: 14,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.check_circle_outline_rounded,
+                              color: Color(0xFF22A45D),
+                              size: 20,
+                            ),
+                            const SizedBox(width: 9),
+                            Expanded(
+                              child: Text(
+                                "✅ Username updated successfully.",
+                                style: GoogleFonts.rajdhani(
+                                  color: Colors.white70,
+                                  fontSize: 15,
+                                  height: 1.4,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
               } on FirebaseAuthException catch (e) {
                 debugPrint(
                   "ProfileBanner updateDisplayName FirebaseAuthException: ${e.code} – ${e.message}",
