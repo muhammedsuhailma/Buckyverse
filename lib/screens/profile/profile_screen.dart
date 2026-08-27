@@ -65,8 +65,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: SizedBox(height: size.height * .035),
                   ),
 
-                  const SliverToBoxAdapter(child: DiscoverBuckyVerse()),
-
                   SliverToBoxAdapter(
                     child: SizedBox(height: size.height * .045),
                   ),

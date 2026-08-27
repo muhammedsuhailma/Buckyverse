@@ -1,5 +1,6 @@
 import 'package:bucky_verse/auth/forgetpassword.dart';
 import 'package:bucky_verse/auth/signuppage.dart';
+import 'package:bucky_verse/auth/verify_email_screen.dart';
 import 'package:bucky_verse/providers/bucket_provider.dart';
 import 'package:bucky_verse/screens/mainscreen.dart';
 import 'package:bucky_verse/services/auth_services.dart';
@@ -301,10 +302,92 @@ class _LoginScreenState extends State<LoginScreen> {
                         final password = _passwordController.text.trim();
 
                         try {
-                          await AuthService().login(
+                          final userCredential = await AuthService().login(
                             email: email,
                             password: password,
                           );
+
+                          // Reload to get the latest emailVerified status
+                          await userCredential.user?.reload();
+                          final user = FirebaseAuth.instance.currentUser;
+
+                          // Block unverified email/password users
+                          if (user != null && !user.emailVerified) {
+                            await FirebaseAuth.instance.signOut();
+                            if (!context.mounted) return;
+
+                            ScaffoldMessenger.of(context)
+                              ..clearSnackBars()
+                              ..showSnackBar(
+                                SnackBar(
+                                  duration:
+                                      const Duration(milliseconds: 3500),
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: Colors.transparent,
+                                  elevation: 0,
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  content: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 12,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF14111D),
+                                      borderRadius:
+                                          BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: const Color(0xff9B2CFF),
+                                        width: 1.2,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: const Color(
+                                            0xff9B2CFF,
+                                          ).withValues(alpha: 0.22),
+                                          blurRadius: 16,
+                                          spreadRadius: 1,
+                                        ),
+                                      ],
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Icon(
+                                          Icons.mark_email_unread_outlined,
+                                          color: Color(0xff9B2CFF),
+                                          size: 22,
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            "Please verify your email before entering BuckyVerse.\nCheck your Spam/Junk folder if needed.",
+                                            style: GoogleFonts.rajdhani(
+                                              color: Colors.white70,
+                                              fontSize: 14,
+                                              height: 1.45,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+
+                            Navigator.pushReplacement(
+                              context,
+                              SlideFadePageRoute(
+                                child: VerifyEmailScreen(
+                                  email: email,
+                                ),
+                              ),
+                            );
+                            return;
+                          }
 
                           if (!context.mounted) return;
                           // Load the user's bucket from Firestore

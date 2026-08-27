@@ -16,6 +16,7 @@ class DiscoveryService {
   static const _kSearch = 'discovery_search';
   static const _kExploreLanguage = 'discovery_explore_language';
   static const _kShake = 'discovery_shake';
+  static const _kShakeIntro = 'discovery_shake_intro';
   static const _kOffline = 'discovery_offline';
   static const _kNotificationPermission = 'discovery_notification_permission';
 
@@ -39,6 +40,16 @@ class DiscoveryService {
   Future<void> markExploreLangSeen() async {
     await _ensureLoaded();
     await _prefs!.setBool(_kExploreLanguage, true);
+  }
+
+  Future<bool> shouldShowShakeIntroTip() async {
+    await _ensureLoaded();
+    return !(_prefs!.getBool(_kShakeIntro) ?? false);
+  }
+
+  Future<void> markShakeIntroSeen() async {
+    await _ensureLoaded();
+    await _prefs!.setBool(_kShakeIntro, true);
   }
 
   Future<bool> shouldShowShakeTip() async {

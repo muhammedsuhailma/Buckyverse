@@ -102,17 +102,32 @@ class _HomeScreenState extends State<HomeScreen> {
       // Show search discovery tip after a short delay (once only)
       Future.delayed(const Duration(seconds: 2), () async {
         if (!mounted) return;
-        final should = await DiscoveryService.instance.shouldShowSearchTip();
-        if (!mounted || !should) return;
-        await DiscoveryService.instance.markSearchSeen();
+        final shouldShowSearch = await DiscoveryService.instance.shouldShowSearchTip();
+        if (shouldShowSearch) {
+          await DiscoveryService.instance.markSearchSeen();
+          if (!mounted) return;
+          await DiscoveryTip.show(
+            context,
+            emoji: '🔍',
+            title: 'Universal Search',
+            body: 'Search Anime, Movies, Series and K-Dramas all at once — just tap the search bar.',
+            onDismiss: () => Navigator.pop(context),
+          );
+        }
+
         if (!mounted) return;
-        DiscoveryTip.show(
-          context,
-          emoji: '🔍',
-          title: 'Universal Search',
-          body: 'Search Anime, Movies, Series and K-Dramas all at once — just tap the search bar.',
-          onDismiss: () => Navigator.pop(context),
-        );
+        final shouldShowShakeIntro = await DiscoveryService.instance.shouldShowShakeIntroTip();
+        if (shouldShowShakeIntro) {
+          await DiscoveryService.instance.markShakeIntroSeen();
+          if (!mounted) return;
+          await DiscoveryTip.show(
+            context,
+            emoji: '✨',
+            title: 'Cosmic Refresh',
+            body: 'Shake your phone anytime to instantly refresh your universe.\n\nNew recommendations, updated trends, and hidden surprises are just a shake away.',
+            onDismiss: () => Navigator.pop(context),
+          );
+        }
       });
     });
   }

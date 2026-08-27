@@ -187,9 +187,8 @@ class _MainScreenState extends State<MainScreen> {
               DiscoveryTip.show(
                 context,
                 emoji: '✨',
-                title: 'Cosmic Refresh Unlocked',
-                body:
-                    'Shake anytime to instantly refresh your universe.',
+                title: 'Cosmic Refresh Activated!',
+                body: "You're ready to refresh your universe anytime with a shake.",
                 onDismiss: () => Navigator.pop(context),
               );
             }

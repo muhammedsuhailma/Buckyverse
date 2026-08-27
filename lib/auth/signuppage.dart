@@ -1,4 +1,4 @@
-import 'package:bucky_verse/auth/loginpage.dart';
+import 'package:bucky_verse/auth/verify_email_screen.dart';
 import 'package:bucky_verse/providers/bucket_provider.dart';
 import 'package:bucky_verse/screens/mainscreen.dart';
 import 'package:bucky_verse/screens/termsandcondition.dart';
@@ -390,27 +390,90 @@ class _SignuppageState extends State<Signuppage> {
                         setState(() => isLoading = true);
 
                         try {
-                          await _auth.signUp(
+                          final credential = await _auth.signUp(
                             email: emailController.text.trim(),
                             password: passwordController.text.trim(),
                           );
 
+                          // Send verification email before signing out
+                          try {
+                            await credential.user?.sendEmailVerification();
+                          } catch (e) {
+                            debugPrint("Warning: sendEmailVerification failed: $e");
+                          }
+
+                          // Sign the user out — they must verify before entering
                           await FirebaseAuth.instance.signOut();
 
                           if (!context.mounted) return;
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                "Account created successfully! Please log in.",
+                          final verifyEmail = emailController.text.trim();
+
+                          // Show a styled success snack before navigating
+                          ScaffoldMessenger.of(context)
+                            ..clearSnackBars()
+                            ..showSnackBar(
+                              SnackBar(
+                                duration: const Duration(milliseconds: 3000),
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Colors.transparent,
+                                elevation: 0,
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                                content: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF14111D),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: const Color(0xff9B2CFF),
+                                      width: 1.2,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(
+                                          0xff9B2CFF,
+                                        ).withValues(alpha: 0.22),
+                                        blurRadius: 16,
+                                        spreadRadius: 1,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Icon(
+                                        Icons.mark_email_unread_outlined,
+                                        color: Color(0xff9B2CFF),
+                                        size: 22,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          "Verification email sent.\nPlease verify your email before logging in.\nCheck your Spam/Junk folder if you don't see it.",
+                                          style: GoogleFonts.rajdhani(
+                                            color: Colors.white70,
+                                            fontSize: 14,
+                                            height: 1.45,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ),
-                          );
+                            );
 
                           Navigator.pushReplacement(
                             context,
                             FadePageRoute(
-                              child: const LoginScreen(),
+                              child: VerifyEmailScreen(email: verifyEmail),
                             ),
                           );
                         } on FirebaseAuthException catch (e) {
