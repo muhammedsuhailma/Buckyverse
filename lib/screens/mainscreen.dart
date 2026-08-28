@@ -189,7 +189,6 @@ class _MainScreenState extends State<MainScreen> {
                 emoji: '✨',
                 title: 'Cosmic Refresh Activated!',
                 body: "You're ready to refresh your universe anytime with a shake.",
-                onDismiss: () => Navigator.pop(context),
               );
             }
           }

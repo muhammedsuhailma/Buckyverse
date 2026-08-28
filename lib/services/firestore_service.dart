@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bucky_verse/models/bucket_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -63,19 +65,28 @@ class FirestoreService {
       final collection = bucketCollection;
       if (collection == null) return [];
 
-      debugPrint("===== Loading Bucket =====");
+      debugPrint('===== Loading Bucket =====');
+      debugPrint('🔥 Firestore: loadBucket() starting for uid=$uid');
 
       final snapshot = await collection.get().timeout(
-        const Duration(seconds: 5),
+        const Duration(seconds: 15),
       );
 
-      debugPrint("Documents found: ${snapshot.docs.length}");
+      debugPrint('Documents found: ${snapshot.docs.length}');
 
       return snapshot.docs
           .map((doc) => BucketItem.fromMap(doc.data()))
           .toList();
+    } on TimeoutException catch (e) {
+      // Timeout is non-fatal — return empty list so the UI continues loading.
+      debugPrint(
+        '⚠️ Firestore loadBucket() timed out after 15s (uid=$uid). '
+        'Error: $e\n'
+        'Returning empty bucket — app will continue normally.',
+      );
+      return [];
     } catch (e) {
-      debugPrint("❌ Firestore loadBucket error: $e");
+      debugPrint('❌ Firestore loadBucket error: $e');
       return [];
     }
   }
