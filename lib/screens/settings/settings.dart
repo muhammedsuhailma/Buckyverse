@@ -7,9 +7,35 @@ import 'package:bucky_verse/screens/settings/notification_manager.dart';
 import 'package:bucky_verse/services/auth_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  String _version = "";
+  String _build = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadVersion();
+  }
+
+  Future<void> _loadVersion() async {
+    final info = await PackageInfo.fromPlatform();
+
+    if (!mounted) return;
+
+    setState(() {
+      _version = info.version;
+      _build = info.buildNumber;
+    });
+  }
 
   Widget settingsItem({
     required BuildContext context,
@@ -140,12 +166,10 @@ class SettingsScreen extends StatelessWidget {
               subtitle: "Manage your notifications",
               color: const Color(0xFFA855F7),
               onTap: () {
-                 Navigator.push(
-                   context,
-                   SlideFadePageRoute(
-                     child: const NotificationManagerScreen(),
-                   ),
-                 );
+                Navigator.push(
+                  context,
+                  SlideFadePageRoute(child: const NotificationManagerScreen()),
+                );
               },
             ),
 
@@ -167,16 +191,16 @@ class SettingsScreen extends StatelessWidget {
               subtitle: "Update your profile information",
               color: const Color(0xFF38BDF8),
               onTap: () {
-                 Navigator.push(
-                   context,
-                   SlideFadePageRoute(
-                     child: const EditProfileScreen(
-                       username: "LEO",
-                       displayTitle: "Universe Explorer",
-                       bio: "Exploring every universe.",
-                     ),
-                   ),
-                 );
+                Navigator.push(
+                  context,
+                  SlideFadePageRoute(
+                    child: const EditProfileScreen(
+                      username: "LEO",
+                      displayTitle: "Universe Explorer",
+                      bio: "Exploring every universe.",
+                    ),
+                  ),
+                );
               },
             ),
 
@@ -187,12 +211,10 @@ class SettingsScreen extends StatelessWidget {
               subtitle: "Manage your BuckyVerse accounts",
               color: const Color(0xFFA855F7),
               onTap: () {
-                 Navigator.push(
-                   context,
-                   SlideFadePageRoute(
-                     child: const AccountManagerScreen(),
-                   ),
-                 );
+                Navigator.push(
+                  context,
+                  SlideFadePageRoute(child: const AccountManagerScreen()),
+                );
               },
             ),
 
@@ -200,15 +222,18 @@ class SettingsScreen extends StatelessWidget {
               context: context,
               icon: Icons.info_outline_rounded,
               title: "About BuckyVerse",
-              subtitle: "Version 1.0.0",
+              subtitle: _version.isEmpty ? "Loading..." : "Version $_version",
               color: const Color(0xFF22C55E),
               onTap: () {
-                 Navigator.push(
-                   context,
-                   SlideFadePageRoute(
-                     child: const AboutBuckyVerseScreen(),
-                   ),
-                 );
+                Navigator.push(
+                  context,
+                  SlideFadePageRoute(
+                    child: AboutBuckyVerseScreen(
+                      version: _version,
+                      buildNumber: _build,
+                    ),
+                  ),
+                );
               },
             ),
 
@@ -247,11 +272,11 @@ class SettingsScreen extends StatelessWidget {
 
                   if (!context.mounted) return;
 
-                   Navigator.pushAndRemoveUntil(
-                     context,
-                     FadePageRoute(child: const LoginScreen()),
-                     (route) => false,
-                   );
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    FadePageRoute(child: const LoginScreen()),
+                    (route) => false,
+                  );
                 } catch (e) {
                   if (!context.mounted) return;
 

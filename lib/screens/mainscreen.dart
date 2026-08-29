@@ -18,6 +18,11 @@ import 'package:bucky_verse/features/explorer/presentation/screens/explore_scree
 import 'package:bucky_verse/screens/bucket/bucket_screen.dart';
 import 'package:bucky_verse/screens/profile/profile_screen.dart';
 import 'package:provider/provider.dart';
+// ── In-app updater ────────────────────────────────────────────────────────────
+import 'package:bucky_verse/services/update_service.dart';
+import 'package:bucky_verse/widgets/update_dialog.dart';
+// ─────────────────────────────────────────────────────────────────────────────
+
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -51,6 +56,9 @@ class _MainScreenState extends State<MainScreen> {
       debounce: const Duration(milliseconds: 1800),
     );
     _shakeDetector.start();
+
+    // ── In-app update check (once per launch, after first frame) ──────────
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkForUpdate());
   }
 
   @override
@@ -58,6 +66,21 @@ class _MainScreenState extends State<MainScreen> {
     _shakeDetector.stop();
     super.dispose();
   }
+
+  /// Checks for a newer GitHub Release and shows the update dialog if one
+  /// is found. Runs at most once per launch (result cached in UpdateService).
+  Future<void> _checkForUpdate() async {
+    debugPrint('[MainScreen] ▶ _checkForUpdate() entered');
+    final info = await UpdateService.instance.checkForUpdate();
+    debugPrint(
+      '[MainScreen] ◀ checkForUpdate() returned: '
+      '${info != null ? "UpdateInfo(v${info.latestVersion})" : "null (no update)"}',
+    );
+    if (!mounted || info == null) return;
+    debugPrint('[MainScreen] Showing update dialog for v${info.latestVersion}');
+    showUpdateDialog(context, info);
+  }
+
 
   void _handleOpenExplore(String category, String sort) {
     setState(() {

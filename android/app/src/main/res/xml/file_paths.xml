@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  FileProvider paths for the in-app updater.
+  external-files-path maps to Context.getExternalFilesDir(), which is
+  the app's private external storage — no storage permission needed.
+-->
+<paths>
+    <external-files-path name="apk_download" path="." />
+</paths>
