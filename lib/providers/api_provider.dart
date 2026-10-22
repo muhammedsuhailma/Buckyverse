@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:bucky_verse/services/jikan_service.dart';
+import 'package:bucky_verse/services/anilist_service.dart';
 import 'package:bucky_verse/services/tmdb_service.dart';
 
 class ApiProvider extends ChangeNotifier {
-  final JikanService _service = JikanService();
-  final TmdbService _tmdb = TmdbService();
+final AniListService _service = AniListService();  
+final TmdbService _tmdb = TmdbService();
 
   List<Map<String, dynamic>> _anime = [];
   List<Map<String, dynamic>> _movies = [];
@@ -32,7 +32,7 @@ class ApiProvider extends ChangeNotifier {
     items.sort((a, b) {
       final ay = int.tryParse(a["year"]?.toString() ?? "0") ?? 0;
       final by = int.tryParse(b["year"]?.toString() ?? "0") ?? 0;
-      return by.compareTo(ay); // newest first
+      return by.compareTo(ay); 
     });
 
     return items;
@@ -74,8 +74,7 @@ class ApiProvider extends ChangeNotifier {
       _isSeriesLoading ||
       _isKdramasLoading;
 
-  /// Maps an ISO 639-1 language code returned by TMDB to a display name.
-  String _mapLanguage(String? code) {
+   String _mapLanguage(String? code) {
     switch (code) {
       case "hi":
         return "Hindi";
