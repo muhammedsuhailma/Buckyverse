@@ -35,6 +35,14 @@ class _HomeScreenState extends State<HomeScreen> {
   String _searchText = "";
   String _selectedCategory = "All";
   String _selectedLanguage = "All";
+  String getGreeting() {
+    final hour = DateTime.now().hour;
+
+    if (hour < 12) return "GOOD MORNING";
+    if (hour < 17) return "GOOD AFTERNOON";
+    if (hour < 21) return "GOOD EVENING";
+    return "Beautiful Night";
+  }
 
   static const List<Map<String, dynamic>> _categories = [
     {
@@ -102,17 +110,34 @@ class _HomeScreenState extends State<HomeScreen> {
       // Show search discovery tip after a short delay (once only)
       Future.delayed(const Duration(seconds: 2), () async {
         if (!mounted) return;
-        final should = await DiscoveryService.instance.shouldShowSearchTip();
-        if (!mounted || !should) return;
-        await DiscoveryService.instance.markSearchSeen();
+        final shouldShowSearch = await DiscoveryService.instance
+            .shouldShowSearchTip();
+        if (shouldShowSearch) {
+          await DiscoveryService.instance.markSearchSeen();
+          if (!mounted) return;
+          await DiscoveryTip.show(
+            context,
+            emoji: '🔍',
+            title: 'Universal Search',
+            body:
+                'Search Anime, Movies, Series and K-Dramas all at once — just tap the search bar.',
+          );
+        }
+
         if (!mounted) return;
-        DiscoveryTip.show(
-          context,
-          emoji: '🔍',
-          title: 'Universal Search',
-          body: 'Search Anime, Movies, Series and K-Dramas all at once — just tap the search bar.',
-          onDismiss: () => Navigator.pop(context),
-        );
+        final shouldShowShakeIntro = await DiscoveryService.instance
+            .shouldShowShakeIntroTip();
+        if (shouldShowShakeIntro) {
+          await DiscoveryService.instance.markShakeIntroSeen();
+          if (!mounted) return;
+          await DiscoveryTip.show(
+            context,
+            emoji: '✨',
+            title: 'Cosmic Refresh',
+            body:
+                'Shake your phone anytime to instantly refresh your universe.\n\nNew recommendations, updated trends, and hidden surprises are just a shake away.',
+          );
+        }
       });
     });
   }
@@ -314,7 +339,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "GOOD EVENING",
+                                  getGreeting(),
                                   style: GoogleFonts.rajdhani(
                                     color: const Color(0xFF6B5B9E),
                                     fontSize: 14,
@@ -374,7 +399,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           border: Border.all(
                             color: isSearchingActive
                                 ? const Color(0xFF8B5CF6).withValues(alpha: 0.5)
-                                : const Color(0xFF653971).withValues(alpha: 0.2),
+                                : const Color(
+                                    0xFF653971,
+                                  ).withValues(alpha: 0.2),
                           ),
                         ),
                         child: Row(
@@ -526,7 +553,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Icon(
                                       Icons.search_off_rounded,
                                       size: 60,
-                                      color: Colors.white.withValues(alpha: 0.2),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.2,
+                                      ),
                                     ),
                                     const SizedBox(height: 16),
                                     Text(

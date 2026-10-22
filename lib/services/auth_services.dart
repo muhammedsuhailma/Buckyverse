@@ -16,20 +16,32 @@ class AuthService {
     try {
       final doc = _firestore.collection('users').doc(user.uid);
 
+      debugPrint('🔥 Firestore: checking user doc for uid=${user.uid}');
       final snapshot = await doc.get().timeout(
-        const Duration(seconds: 5),
+        const Duration(seconds: 15),
       );
 
       if (!snapshot.exists) {
+        debugPrint('🔥 Firestore: creating user doc for uid=${user.uid}');
         await doc.set({
           'username': user.displayName ?? '',
           'email': user.email ?? '',
           'createdAt': FieldValue.serverTimestamp(),
-        }).timeout(const Duration(seconds: 5));
+        }).timeout(const Duration(seconds: 15));
+        debugPrint('✅ Firestore: user doc created for uid=${user.uid}');
+      } else {
+        debugPrint('✅ Firestore: user doc already exists for uid=${user.uid}');
       }
+    } on TimeoutException catch (e) {
+      // Timeout is non-fatal — auth continues normally.
+      debugPrint(
+        '⚠️ Firestore user document creation timed out after 15s '
+        '(uid=${user.uid}). Error: $e\n'
+        'App will continue normally — document creation will retry on next login.',
+      );
     } catch (e) {
-      debugPrint("⚠️ Firestore user document creation warning: $e");
-      // Auth continues even if user profile document creation times out or fails
+      debugPrint('⚠️ Firestore user document creation warning: $e');
+      // Auth continues even if user profile document creation fails
     }
   }
 

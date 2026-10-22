@@ -41,7 +41,8 @@ class _OfflineScreenState extends State<OfflineScreen>
       CurvedAnimation(parent: _floatController, curve: Curves.easeInOut),
     );
 
-    // Show offline tip once
+    // Show offline tip once — DiscoveryTip self-dismisses via its own
+    // BuildContext, so no caller-context reference is ever held.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final should = await DiscoveryService.instance.shouldShowOfflineTip();
       if (!mounted || !should) return;
@@ -52,7 +53,6 @@ class _OfflineScreenState extends State<OfflineScreen>
         emoji: '📡',
         title: 'You\'re Offline',
         body: 'No worries — we\'ll reconnect automatically once you\'re back online.',
-        onDismiss: () => Navigator.pop(context),
       );
     });
 

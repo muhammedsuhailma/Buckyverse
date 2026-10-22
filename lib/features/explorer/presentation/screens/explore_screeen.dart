@@ -96,7 +96,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
             title: 'Browse by Language',
             body:
                 'Discover Hindi, Malayalam, Tamil, Korean, Japanese and more using the Language filter.',
-            onDismiss: () => Navigator.pop(context),
           );
         });
       });

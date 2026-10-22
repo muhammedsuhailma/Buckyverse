@@ -1,13 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
-class AboutBuckyVerseScreen extends StatelessWidget {
-  const AboutBuckyVerseScreen({super.key});
+class AboutBuckyVerseScreen extends StatefulWidget {
+  final String? version;
+  final String? buildNumber;
+
+  const AboutBuckyVerseScreen({
+    super.key,
+    this.version,
+    this.buildNumber,
+  });
+
+  @override
+  State<AboutBuckyVerseScreen> createState() => _AboutBuckyVerseScreenState();
+}
+
+class _AboutBuckyVerseScreenState extends State<AboutBuckyVerseScreen> {
+  String _version = "";
+  String _build = "";
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.version != null && widget.version!.isNotEmpty) {
+      _version = widget.version!;
+      _build = widget.buildNumber ?? "";
+    } else {
+      _loadVersion();
+    }
+  }
+
+  Future<void> _loadVersion() async {
+    final info = await PackageInfo.fromPlatform();
+
+    if (!mounted) return;
+
+    setState(() {
+      _version = info.version;
+      _build = info.buildNumber;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
     return Scaffold(
       backgroundColor: const Color(0xFF09080F),
 
@@ -98,7 +135,9 @@ class AboutBuckyVerseScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFF14111D),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white.withValues(alpha: .06)),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: .06),
+                  ),
                 ),
                 child: Column(
                   children: [
@@ -177,7 +216,7 @@ class AboutBuckyVerseScreen extends StatelessWidget {
 
               SizedBox(height: size.height * .035),
               Text(
-                "Version 1.0.0",
+                _version.isEmpty ? "Version..." : "Version $_version ($_build)",
                 style: GoogleFonts.rajdhani(
                   color: Colors.white38,
                   fontSize: 13,

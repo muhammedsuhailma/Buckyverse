@@ -1,5 +1,6 @@
 import 'package:bucky_verse/widgets/profile/continue_journey.dart';
-import 'package:bucky_verse/widgets/profile/discover_buckyverse.dart';
+import 'package:bucky_verse/widgets/profile/discover_buckyverse.dart'
+    show ComingSoonSection;
 import 'package:bucky_verse/widgets/profile/journey_stats.dart';
 import 'package:bucky_verse/widgets/profile/profilebanneer.dart';
 import 'package:bucky_verse/widgets/shimmer/profile_shimmer.dart';
@@ -64,8 +65,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   SliverToBoxAdapter(
                     child: SizedBox(height: size.height * .035),
                   ),
-
-                  const SliverToBoxAdapter(child: DiscoverBuckyVerse()),
+                  const SliverToBoxAdapter(child: ComingSoonSection()),
 
                   SliverToBoxAdapter(
                     child: SizedBox(height: size.height * .045),
