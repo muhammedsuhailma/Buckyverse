@@ -9,19 +9,12 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 /// ── Configuration ────────────────────────────────────────────────────────────
 /// Change these two constants to point to a different repository.
-const String _kGithubOwner = 'muhammedsuhailma22-bot';
+const String _kGithubOwner = 'muhammedsuhailma';
 const String _kGithubRepo = 'Buckyverse';
-// ─────────────────────────────────────────────────────────────────────────────
-
 const String _kApiUrl =
     'https://api.github.com/repos/$_kGithubOwner/$_kGithubRepo/releases/latest';
 
-/// Singleton service that checks GitHub Releases for a newer version of the
-/// app and returns an [UpdateInfo] when one is available.
-///
-/// Results are cached in memory for the lifetime of the app process —
-/// the GitHub API is called at most once per launch.
-class UpdateService {
+ class UpdateService {
   UpdateService._internal();
   static final UpdateService instance = UpdateService._internal();
 
@@ -137,10 +130,9 @@ class UpdateService {
       }
 
       // Strip leading 'v'/'V' for semver comparison.
-      final latestVersion =
-          (tagName.startsWith('v') || tagName.startsWith('V'))
-              ? tagName.substring(1)
-              : tagName;
+      final latestVersion = (tagName.startsWith('v') || tagName.startsWith('V'))
+          ? tagName.substring(1)
+          : tagName;
 
       // ── [TRACE 4] Version comparison ──────────────────────────────────────
       debugPrint(
@@ -149,20 +141,18 @@ class UpdateService {
       );
 
       final needsUpdate = isNewerVersion(installedVersion, latestVersion);
-      debugPrint(
-        '[UpdateService] [4] isNewerVersion result: $needsUpdate',
-      );
+      debugPrint('[UpdateService] [4] isNewerVersion result: $needsUpdate');
 
       if (!needsUpdate) {
-        debugPrint(
-          '[UpdateService] [4] ✓ App is up to date — no dialog.',
-        );
+        debugPrint('[UpdateService] [4] ✓ App is up to date — no dialog.');
         _markChecked(null);
         return null;
       }
 
       // ── [TRACE 5] Find APK asset ──────────────────────────────────────────
-      debugPrint('[UpdateService] [5] Scanning ${assets.length} asset(s) for APK…');
+      debugPrint(
+        '[UpdateService] [5] Scanning ${assets.length} asset(s) for APK…',
+      );
 
       String? apkUrl;
       for (var i = 0; i < assets.length; i++) {
