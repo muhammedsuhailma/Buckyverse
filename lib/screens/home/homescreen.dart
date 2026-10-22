@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (hour < 12) return "GOOD MORNING";
     if (hour < 17) return "GOOD AFTERNOON";
     if (hour < 21) return "GOOD EVENING";
-    return "GOOD NIGHT";
+    return "Beautiful Night";
   }
 
   static const List<Map<String, dynamic>> _categories = [
